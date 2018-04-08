@@ -23,7 +23,6 @@ document.querySelector('.btn-roll').addEventListener('click', function () {
 		var diceDOM = document.querySelector('.dice');
 		diceDOM.style.display = 'block';
 		diceDOM.src = './img/dice-' + dice + '.png';
-		
 		// Clear entire score if player rolls two 6's in a row during a turn
 		if (dice === 6 && lastDice === 6) {
 			scores[activePlayer] = 0;
@@ -35,12 +34,12 @@ document.querySelector('.btn-roll').addEventListener('click', function () {
 			// Add score
 			document.querySelector('.dice').classList.remove('lose-turn');
 			roundScore += dice;
+			lastDice = dice;
 			document.querySelector('#current-' + activePlayer).textContent = roundScore;
 		} else {
 			document.querySelector('.dice').classList.add('lose-turn');
 			nextPlayer();
 		}
-		lastDice = dice;
 	}
 });
 
@@ -113,7 +112,6 @@ function nextPlayer() {
 	activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
 	roundScore = 0;
 	lastDice = 0;
-
 	// Reset score for current round
 	document.getElementById('current-0').textContent = '0';
 	document.getElementById('current-1').textContent = '0';
