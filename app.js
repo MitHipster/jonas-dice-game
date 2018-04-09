@@ -10,40 +10,70 @@ GAME RULES:
 - The first player to reach the set TOTAL on their ENTIRE score wins the game
 
 */
-var scores, roundScore, activePlayer, gamePlaying;
+var scores, roundScore, activePlayer, gamePlaying, dice1, dice2;
 // Bind functions to shorten name
 var $ = document.querySelector.bind(document);
+var $$ = document.querySelectorAll.bind(document);
 var $Id = document.getElementById.bind(document);
 // Initialize game
 init();
 
+function rndNum() {
+	return Math.floor(Math.random() * 6) + 1;
+}
+
+function loseTurn(status) {
+	$$('.dice').forEach(function (die) {
+		// Add / remove class
+		if (status === 'add') {
+			die.classList.add('lose-turn');
+		} else {
+			die.classList.remove('lose-turn');
+		}
+	});
+}
+
+function nextPlayer() {
+	// Next player
+	activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
+	roundScore = 0;
+
+	scores.forEach(function (player, i) {
+		// Reset score for current round
+		$Id('current-' + i).textContent = '0';
+		// Toggle active player class
+		$('.player-' + i + '-panel').classList.toggle('active');
+	});
+}
+ 
 $('.btn-roll').addEventListener('click', function () {
 	if (gamePlaying) {
 		// Get a dice roll
-		var dice1 = Math.floor(Math.random() * 6) + 1;
-		var dice2 = Math.floor(Math.random() * 6) + 1;
-		// Display the result
-		$Id('dice-1').style.display = 'block';
-		$Id('dice-2').style.display = 'block';
-		$Id('dice-1').src = 'img/dice-' + dice1 + '.png';
-		$Id('dice-2').src = 'img/dice-' + dice2 + '.png';
+		dice1 = rndNum();
+		dice2 = rndNum();
+
+		$$('.dice').forEach(function (die, i) {
+			// Display the result
+			++i;
+			die.style.display = 'block';
+			die.src = 'img/dice-' + window['dice' + i] + '.png';
+		});
 		// Clear entire score if player rolls two 6's in a row during a turn
 		if (dice1 === 6 && dice2 === 6) {
 			scores[activePlayer] = 0;
 			$('#score-' + activePlayer).textContent = 0;
-			$Id('dice-1').classList.add('lose-turn');
-			$Id('dice-2').classList.add('lose-turn');
+			// Add lose turn class
+			loseTurn('add');
 			nextPlayer();
 		} else if (dice1 > 1 && dice2 > 1) {
-			// Update the round score if the roll is not 1
+			// Remove lose turn class
+			loseTurn('remove');
 			// Add score
-			$Id('dice-1').classList.remove('lose-turn');
-			$Id('dice-2').classList.remove('lose-turn');
 			roundScore += dice1 + dice2;
 			$('#current-' + activePlayer).textContent = roundScore;
 		} else {
-			$Id('dice-1').classList.add('lose-turn');
-			$Id('dice-2').classList.add('lose-turn');
+			// Add lose turn class
+			loseTurn('add');
 			nextPlayer();
 		}
 	}
@@ -53,19 +83,16 @@ $('.btn-hold').addEventListener('click', function () {
 	if (gamePlaying) {
 		// Add current score to global score
 		scores[activePlayer] += roundScore;
-	
 		// Update the UI
 		$('#score-' + activePlayer).textContent = scores[activePlayer];
-
 		// Get play until value from input field
 		var input = $Id('final-score').value;
-	
 		// Check if player won the game
 		if (scores[activePlayer] >= input) {
 			$('#name-' + activePlayer).textContent = 'WINNER!';
-
-			$Id('dice-1').style.display = 'none';
-			$Id('dice-2').style.display = 'none';
+			$$('.dice').forEach(function (die, i) {
+				die.style.display = 'none';
+			});
 
 			$('.player-' + activePlayer + '-panel').classList.add('winner');
 			$('.player-' + activePlayer + '-panel').classList.remove('active');
@@ -86,26 +113,22 @@ function init() {
 	roundScore = 0;
 	gamePlaying = true;
 
-	$Id('dice-1').style.display = 'none';
-	$Id('dice-2').style.display = 'none';
+	$$('.dice').forEach(function (die, i) {
+		++i;
+		die.style.display = 'none';
+	});
+	loseTurn('remove');
 
-	$Id('score-0').textContent = '0';
-	$Id('score-1').textContent = '0';
+	scores.forEach(function (player, i) {
+		$Id('score-' + i).textContent = '0';
+		$Id('current-' + i).textContent = '0';
+		$Id('name-' + i).textContent = 'Player' + (i + 1);
 
-	$Id('current-0').textContent = '0';
-	$Id('current-1').textContent = '0';
-
-	$Id('name-0').textContent = 'Player 1';
-	$Id('name-1').textContent = 'Player 2';
+		$('.player-' + i + '-panel').classList.remove('winner');
+	});
 
 	$('.player-0-panel').classList.add('active');
 	$('.player-1-panel').classList.remove('active');
-
-	$('.player-0-panel').classList.remove('winner');
-	$('.player-1-panel').classList.remove('winner');
-
-	$Id('dice-1').classList.remove('lose-turn');
-	$Id('dice-2').classList.remove('lose-turn');
 }
 
 $Id('final-score').addEventListener('change', function () {
@@ -115,16 +138,4 @@ $Id('final-score').addEventListener('change', function () {
 	} else if (this.value > 200) {
 		this.value = 200;
 	}
-})
-
-function nextPlayer() {
-	// Next player
-	activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
-	roundScore = 0;
-	// Reset score for current round
-	$Id('current-0').textContent = '0';
-	$Id('current-1').textContent = '0';
-	// Toggle active player class
-	$('.player-0-panel').classList.toggle('active');
-	$('.player-1-panel').classList.toggle('active');
-}
+});
