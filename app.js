@@ -11,62 +11,64 @@ GAME RULES:
 
 */
 var scores, roundScore, activePlayer, gamePlaying;
-
+// Bind functions to shorten name
+var $ = document.querySelector.bind(document);
+var $Id = document.getElementById.bind(document);
 // Initialize game
 init();
 
-document.querySelector('.btn-roll').addEventListener('click', function () {
+$('.btn-roll').addEventListener('click', function () {
 	if (gamePlaying) {
 		// Get a dice roll
 		var dice1 = Math.floor(Math.random() * 6) + 1;
 		var dice2 = Math.floor(Math.random() * 6) + 1;
 		// Display the result
-		document.getElementById('dice-1').style.display = 'block';
-		document.getElementById('dice-2').style.display = 'block';
-		document.getElementById('dice-1').src = 'img/dice-' + dice1 + '.png';
-		document.getElementById('dice-2').src = 'img/dice-' + dice2 + '.png';
+		$Id('dice-1').style.display = 'block';
+		$Id('dice-2').style.display = 'block';
+		$Id('dice-1').src = 'img/dice-' + dice1 + '.png';
+		$Id('dice-2').src = 'img/dice-' + dice2 + '.png';
 		// Clear entire score if player rolls two 6's in a row during a turn
 		if (dice1 === 6 && dice2 === 6) {
 			scores[activePlayer] = 0;
-			document.querySelector('#score-' + activePlayer).textContent = 0;
-			document.getElementById('dice-1').classList.add('lose-turn');
-			document.getElementById('dice-2').classList.add('lose-turn');
+			$('#score-' + activePlayer).textContent = 0;
+			$Id('dice-1').classList.add('lose-turn');
+			$Id('dice-2').classList.add('lose-turn');
 			nextPlayer();
 		} else if (dice1 > 1 && dice2 > 1) {
 			// Update the round score if the roll is not 1
 			// Add score
-			document.getElementById('dice-1').classList.remove('lose-turn');
-			document.getElementById('dice-2').classList.remove('lose-turn');
+			$Id('dice-1').classList.remove('lose-turn');
+			$Id('dice-2').classList.remove('lose-turn');
 			roundScore += dice1 + dice2;
-			document.querySelector('#current-' + activePlayer).textContent = roundScore;
+			$('#current-' + activePlayer).textContent = roundScore;
 		} else {
-			document.getElementById('dice-1').classList.add('lose-turn');
-			document.getElementById('dice-2').classList.add('lose-turn');
+			$Id('dice-1').classList.add('lose-turn');
+			$Id('dice-2').classList.add('lose-turn');
 			nextPlayer();
 		}
 	}
 });
 
-document.querySelector('.btn-hold').addEventListener('click', function () {
+$('.btn-hold').addEventListener('click', function () {
 	if (gamePlaying) {
 		// Add current score to global score
 		scores[activePlayer] += roundScore;
 	
 		// Update the UI
-		document.querySelector('#score-' + activePlayer).textContent = scores[activePlayer];
+		$('#score-' + activePlayer).textContent = scores[activePlayer];
 
 		// Get play until value from input field
-		var input = document.getElementById('final-score').value;
+		var input = $Id('final-score').value;
 	
 		// Check if player won the game
 		if (scores[activePlayer] >= input) {
-			document.querySelector('#name-' + activePlayer).textContent = 'WINNER!';
+			$('#name-' + activePlayer).textContent = 'WINNER!';
 
-			document.getElementById('dice-1').style.display = 'none';
-			document.getElementById('dice-2').style.display = 'none';
+			$Id('dice-1').style.display = 'none';
+			$Id('dice-2').style.display = 'none';
 
-			document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
-			document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
+			$('.player-' + activePlayer + '-panel').classList.add('winner');
+			$('.player-' + activePlayer + '-panel').classList.remove('active');
 			gamePlaying = false;
 		} else {
 			// Next player
@@ -75,7 +77,7 @@ document.querySelector('.btn-hold').addEventListener('click', function () {
 	}
 });
 
-document.querySelector('.btn-new').addEventListener('click', init);
+$('.btn-new').addEventListener('click', init);
 
 function init() {
 	// Reset game conditions
@@ -84,29 +86,29 @@ function init() {
 	roundScore = 0;
 	gamePlaying = true;
 
-	document.getElementById('dice-1').style.display = 'none';
-	document.getElementById('dice-2').style.display = 'none';
+	$Id('dice-1').style.display = 'none';
+	$Id('dice-2').style.display = 'none';
 
-	document.getElementById('score-0').textContent = '0';
-	document.getElementById('score-1').textContent = '0';
+	$Id('score-0').textContent = '0';
+	$Id('score-1').textContent = '0';
 
-	document.getElementById('current-0').textContent = '0';
-	document.getElementById('current-1').textContent = '0';
+	$Id('current-0').textContent = '0';
+	$Id('current-1').textContent = '0';
 
-	document.getElementById('name-0').textContent = 'Player 1';
-	document.getElementById('name-1').textContent = 'Player 2';
+	$Id('name-0').textContent = 'Player 1';
+	$Id('name-1').textContent = 'Player 2';
 
-	document.querySelector('.player-0-panel').classList.add('active');
-	document.querySelector('.player-1-panel').classList.remove('active');
+	$('.player-0-panel').classList.add('active');
+	$('.player-1-panel').classList.remove('active');
 
-	document.querySelector('.player-0-panel').classList.remove('winner');
-	document.querySelector('.player-1-panel').classList.remove('winner');
+	$('.player-0-panel').classList.remove('winner');
+	$('.player-1-panel').classList.remove('winner');
 
-	document.getElementById('dice-1').classList.remove('lose-turn');
-	document.getElementById('dice-2').classList.remove('lose-turn');
+	$Id('dice-1').classList.remove('lose-turn');
+	$Id('dice-2').classList.remove('lose-turn');
 }
 
-document.getElementById('final-score').addEventListener('change', function () {
+$Id('final-score').addEventListener('change', function () {
 	// Prevent input from being less than 50 or greater than 200
 	if (!this.value || this.value < 50) {
 		this.value = 50;
@@ -120,9 +122,9 @@ function nextPlayer() {
 	activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
 	roundScore = 0;
 	// Reset score for current round
-	document.getElementById('current-0').textContent = '0';
-	document.getElementById('current-1').textContent = '0';
+	$Id('current-0').textContent = '0';
+	$Id('current-1').textContent = '0';
 	// Toggle active player class
-	document.querySelector('.player-0-panel').classList.toggle('active');
-	document.querySelector('.player-1-panel').classList.toggle('active');
+	$('.player-0-panel').classList.toggle('active');
+	$('.player-1-panel').classList.toggle('active');
 }
