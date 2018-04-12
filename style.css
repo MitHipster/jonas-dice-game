@@ -179,8 +179,8 @@ i {
 	top: 467px;
 }
 
-#dice-1 { top: 120px; }
-#dice-2 { top: 250px; }
+#dice-0 { top: 120px; }
+#dice-1 { top: 250px; }
 
 .dice {
 	position: absolute;
